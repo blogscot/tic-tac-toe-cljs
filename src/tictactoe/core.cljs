@@ -45,20 +45,19 @@
 
 (defn reset-button []
   [:button {:on-click (fn []
-                        #_(swap! app-state assoc-in [:next] :circle)
                         (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty)))))} "Reset Game"])
 
 (defn get-status []
   (check-game (get-in @app-state [:game])))
 
 (defn game-status []
-  [:h2 (condp = (get-status)
-         nil (str "Current Player: " (if (= :circle (current-player))
-                                       "Circle"
-                                       "Cross"))
-         :circle "Circle wins"
-         :cross "Cross wins"
-         :draw "Game is a bust")])
+  [:span#status (condp = (get-status)
+                  nil (str "Current Player: " (if (= :circle (current-player))
+                                                "Circle"
+                                                "Cross"))
+                  :circle "Circle wins!"
+                  :cross "Cross wins!"
+                  :draw "Game is a bust!")])
 
 (defn game []
   [:div
