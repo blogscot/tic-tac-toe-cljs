@@ -34,8 +34,7 @@
         cell-empty? (= :empty (get-in @app-state [:game pos]))
         game-over (get-status)]
     (when (and cell-empty? (not game-over))
-      (swap! app-state assoc-in [:game pos] (get-in @app-state [:next]))
-      (next-turn))))
+      (swap! app-state assoc-in [:game pos] (get-in @app-state [:next])))))
 
 ;; Components
 
@@ -46,7 +45,8 @@
           :fill color
           :x x
           :y y
-          :on-click (fn [] (update-cell x y))}])
+          :on-click (fn [] (update-cell x y)
+                      (next-turn))}])
 
 (defn circle [x y color]
   ^{:key (str x y)}
