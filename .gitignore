@@ -13,5 +13,6 @@ pom.xml
 .rebel_readline_history
 
 resources/public/cljs-out
+.calva
 
 notes.md
