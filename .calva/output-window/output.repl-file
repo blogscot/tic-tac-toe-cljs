@@ -1,0 +1,11 @@
+; This is the Calva evaluation results output window.
+; Leave it open, please. Because quirks.
+; The keyboard shortcut `ctrl+alt+c o` shows and focuses this window.
+; Please see https://calva.io/output/ for docs. Happy coding!
+
+clj::user=>
+clj::cljs.user=>
+; Evaluating file: core.cljs
+nil
+cljs::cljs.user=>
+cljs::tictactoe.core=>
