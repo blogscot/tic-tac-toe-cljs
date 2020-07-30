@@ -31,28 +31,49 @@
 
 (defn update-cell [x y]
   (let [pos (calc-index x y)
-        is-empty? (= :empty (get-in @app-state [:game pos]))
+        cell-empty? (= :empty (get-in @app-state [:game pos]))
         game-over (get-status)]
-    (when (and is-empty? (not game-over))
+    (when (and cell-empty? (not game-over))
       (swap! app-state assoc-in [:game pos] (get-in @app-state [:next]))
       (next-turn))))
 
 ;; Components
 
+(defn rect [x y color]
+  ^{:key (str x y)}
+  [:rect {:width 0.9
+          :height 0.9
+          :fill color
+          :x x
+          :y y
+          :on-click (fn [] (update-cell x y))}])
+
+(defn circle [x y color]
+  ^{:key (str x y)}
+  [:circle {:cx (+ x 0.45)
+            :cy (+ y 0.45)
+            :r 0.38
+            :fill "white"
+            :stroke color
+            :stroke-width 0.1}])
+
+(defn cross [x y color]
+  ^{:key (str x y)}
+  [:g {:stroke color
+       :stroke-width 0.4
+       :stroke-linecap "round"
+       :transform
+       (str "translate(" (+ 0.42 x) "," (+ 0.42 y) ") scale(0.3)")}
+   [:line {:x1 -1 :y1 -1 :x2 1 :y2 1}]
+   [:line {:x1 1 :y1 -1 :x2 -1 :y2 1}]])
+
 (defn cell [x y]
   (let [pos (calc-index x y)
-        status (get-in @app-state [:game pos])
-        color (condp = status
-                :empty "green"
-                :circle "aqua"
-                :cross "red")]
-    ^{:key (str x y)}
-    [:rect {:width 0.9
-            :height 0.9
-            :fill color
-            :x x
-            :y y
-            :on-click (fn [] (update-cell x y))}]))
+        status (get-in @app-state [:game pos])]
+    (condp = status
+      :empty  (rect x y "green")
+      :circle (circle x y "aqua")
+      :cross  (cross x y "red"))))
 
 (defn reset-button []
   [:button {:on-click (fn []
