@@ -15,8 +15,14 @@
 (defn get-app-element []
   (gdom/getElement "app"))
 
-(defn current-player []
+(defn get-current-player []
   (get-in @app-state [:next]))
+
+(defn get-status
+  "Returns either nil (game in progress) or end condition:
+   winning player or draw."
+  []
+  (check-game (get-in @app-state [:game])))
 
 (defn next-turn []
   (let [current (get-in @app-state [:next])
@@ -25,10 +31,13 @@
 
 (defn update-cell [x y]
   (let [pos (calc-index x y)
-        is-empty? (= :empty (get-in @app-state [:game pos]))]
-    (when is-empty?
+        is-empty? (= :empty (get-in @app-state [:game pos]))
+        game-over (get-status)]
+    (when (and is-empty? (not game-over))
       (swap! app-state assoc-in [:game pos] (get-in @app-state [:next]))
       (next-turn))))
+
+;; Components
 
 (defn cell [x y]
   (let [pos (calc-index x y)
@@ -49,12 +58,9 @@
   [:button {:on-click (fn []
                         (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty)))))} "Reset Game"])
 
-(defn get-status []
-  (check-game (get-in @app-state [:game])))
-
 (defn game-status []
   [:span#status (condp = (get-status)
-                  nil (str "Current Player: " (if (= :circle (current-player))
+                  nil (str "Current Player: " (if (= :circle (get-current-player))
                                                 "Circle"
                                                 "Cross"))
                   :circle "Circle wins!"
