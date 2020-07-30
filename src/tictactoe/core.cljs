@@ -23,10 +23,12 @@
         next (if (= current :circle) :cross :circle)]
     (swap! app-state assoc-in [:next] next)))
 
-(defn update-board [x y]
-  (let [pos (calc-index x y)]
-    (swap! app-state assoc-in [:game pos] (get-in @app-state [:next]))
-    (next-turn)))
+(defn update-cell [x y]
+  (let [pos (calc-index x y)
+        is-empty? (= :empty (get-in @app-state [:game pos]))]
+    (when is-empty?
+      (swap! app-state assoc-in [:game pos] (get-in @app-state [:next]))
+      (next-turn))))
 
 (defn cell [x y]
   (let [pos (calc-index x y)
@@ -41,7 +43,7 @@
             :fill color
             :x x
             :y y
-            :on-click (fn [] (update-board x y))}]))
+            :on-click (fn [] (update-cell x y))}]))
 
 (defn reset-button []
   [:button {:on-click (fn []
