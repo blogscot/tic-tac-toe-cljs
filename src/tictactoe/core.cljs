@@ -15,6 +15,9 @@
 (defn get-app-element []
   (gdom/getElement "app"))
 
+(defn get-modal-element []
+  (gdom/getElementByClass "modal-container"))
+
 (defn get-current-player []
   (get-in @app-state [:next]))
 
@@ -34,6 +37,9 @@
         game-over (get-status)]
     (when (and cell-empty? (not game-over))
       (swap! app-state assoc-in [:game pos] (get-in @app-state [:next])))))
+
+(defn close-modal []
+  (set! (.-style (get-modal-element)) "display: none;"))
 
 ;; Components
 
@@ -87,8 +93,16 @@
                   :cross "Cross wins!"
                   :draw "Game is a bust!")])
 
+(defn dialog []
+  [:div.modal-container
+   [:div.modal
+    [:div.details
+     [:h1 "Tic Tac Toe"]]
+    [:button.btn {:on-click close-modal} "Start"]]])
+
 (defn game []
   [:div
+   (dialog)
    [:h1 (:text @app-state)]
    (game-status)
    (when (get-status)

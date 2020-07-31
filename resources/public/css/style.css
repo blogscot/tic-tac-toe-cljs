@@ -4,6 +4,73 @@ h1 {
 	margin-bottom: 1rem;
 }
 
+body {
+	--light: hsl(0, 0%, 100%);
+	--background: linear-gradient(
+		to right bottom,
+		hsl(236, 50%, 50%),
+		hsl(195, 50%, 50%)
+	);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	min-height: 100vh;
+}
+
+.modal-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	background: hsla(0, 0%, 40%, 0.6);
+}
+
+.modal {
+	position: relative;
+	overflow: hidden;
+	color: var(--light);
+	background: var(--background);
+	border: 2px solid green;
+	border-radius: 4px;
+	width: 400px;
+	text-align: center;
+	padding: 1.2rem;
+	margin-top: 3rem;
+}
+
+.details {
+	text-align: center;
+	margin-bottom: 4rem;
+	padding-bottom: 4rem;
+	border-bottom: 1px solid hsla(0, 0%, 100%, 0.4);
+}
+
+.btn {
+	padding: 0.3rem 0.8rem;
+	border: 1px solid hsla(0, 0%, 100%, 0.4);
+	border-radius: 0.3rem;
+
+	color: inherit;
+	background: transparent;
+	font-size: 1.4rem;
+	font-family: inherit;
+	letter-spacing: 0.03rem;
+
+	transition: 0.2s;
+	cursor: pointer;
+}
+
+.modal h1 {
+	font-size: 2rem;
+}
+
 #status {
 	font-size: 1.2rem;
 	margin: 2rem;
