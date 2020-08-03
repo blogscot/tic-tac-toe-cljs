@@ -8,7 +8,6 @@
 
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.773"]
-                 [binaryage/devtools "1.0.2"]
                  [reagent "0.10.0"]]
 
   :source-paths ["src"]
@@ -19,7 +18,8 @@
             "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "tictactoe.test-runner"]}
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.11"]
-                                  [com.bhauman/rebel-readline-cljs "0.1.4"]]
+                                  [com.bhauman/rebel-readline-cljs "0.1.4"]
+                                  [binaryage/devtools "1.0.2"]]
 
                    :resource-paths ["target"]
                    ;; need to add the compiled assets to the :clean-targets
