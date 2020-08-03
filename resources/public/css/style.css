@@ -15,7 +15,6 @@ body {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-
 	min-height: 100vh;
 }
 
@@ -47,9 +46,8 @@ body {
 
 .details {
 	text-align: center;
-	margin-bottom: 4rem;
-	padding-bottom: 4rem;
-	border-bottom: 1px solid hsla(0, 0%, 100%, 0.4);
+	margin-bottom: 1.5rem;
+	padding-bottom: 1.5rem;
 }
 
 .btn {
@@ -65,6 +63,15 @@ body {
 
 	transition: 0.2s;
 	cursor: pointer;
+}
+
+.btn:first-of-type {
+	margin-right: 1rem;
+}
+
+#opponent-choice {
+	font-size: 1.5rem;
+	margin-bottom: 2rem;
 }
 
 .modal h1 {

@@ -10,40 +10,45 @@
 
 (defonce app-state (atom {:text "Tic Tac Toe"
                           :next :circle
+                          :opponent :player
                           :game (vec (take 9 (repeat :empty)))}))
 
-(defn get-app-element []
+(defn- get-app-element []
   (gdom/getElement "app"))
 
-(defn get-modal-element []
+(defn- get-modal-element []
   (gdom/getElementByClass "modal-container"))
 
-(defn get-current-player []
+(defn- get-current-player []
   (get-in @app-state [:next]))
 
-(defn get-status
+(defn- get-status
   "Returns either nil (game in progress) or end condition:
    winning player or draw."
   []
   (check-game (get-in @app-state [:game])))
 
-(defn next-turn []
+(defn- next-turn []
   (let [current (get-in @app-state [:next])
         next (if (= current :circle) :cross :circle)]
     (swap! app-state assoc-in [:next] next)))
 
-(defn update-cell [pos]
+(defn- update-cell [pos]
   (let [cell-empty? (= :empty (get-in @app-state [:game pos]))
         game-over (get-status)]
     (when (and cell-empty? (not game-over))
       (swap! app-state assoc-in [:game pos] (get-in @app-state [:next])))))
 
-(defn close-modal []
+(defn- close-modal []
   (set! (.-style (get-modal-element)) "display: none;"))
+
+(defn- set-opponent [opponent]
+  (swap! app-state assoc-in [:opponent] opponent)
+  (close-modal))
 
 ;; Components
 
-(defn rect [x y color]
+(defn- rect [x y color]
   ^{:key (str x y)}
   [:rect {:width 0.9
           :height 0.9
@@ -53,7 +58,7 @@
           :on-click (fn [] (update-cell (calc-index x y))
                       (next-turn))}])
 
-(defn circle [x y color]
+(defn- circle [x y color]
   ^{:key (str x y)}
   [:circle {:cx (+ x 0.45)
             :cy (+ y 0.45)
@@ -62,7 +67,7 @@
             :stroke color
             :stroke-width 0.1}])
 
-(defn cross [x y color]
+(defn- cross [x y color]
   ^{:key (str x y)}
   [:g {:stroke color
        :stroke-width 0.4
@@ -72,7 +77,7 @@
    [:line {:x1 -1 :y1 -1 :x2 1 :y2 1}]
    [:line {:x1 1 :y1 -1 :x2 -1 :y2 1}]])
 
-(defn cell [x y]
+(defn- cell [x y]
   (let [pos (calc-index x y)
         status (get-in @app-state [:game pos])]
     (condp = status
@@ -80,11 +85,11 @@
       :circle (circle x y "aqua")
       :cross  (cross x y "red"))))
 
-(defn reset-button []
+(defn- reset-button []
   [:button {:on-click (fn []
                         (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty)))))} "Reset Game"])
 
-(defn game-status []
+(defn- game-status []
   [:span#status (condp = (get-status)
                   nil (str "Current Player: " (if (= :circle (get-current-player))
                                                 "Circle"
@@ -93,16 +98,19 @@
                   :cross "Cross wins!"
                   :draw "Game is a bust!")])
 
-(defn dialog []
+(defn- modal []
   [:div.modal-container
    [:div.modal
     [:div.details
      [:h1 "Tic Tac Toe"]]
-    [:button.btn {:on-click close-modal} "Start"]]])
+    [:div#opponent-choice "Player vs"]
+    [:span:btn-row
+     [:button.btn {:on-click #(set-opponent :player)} "Player"]
+     [:button.btn {:on-click #(set-opponent :computer)} "Computer"]]]])
 
-(defn game []
+(defn- game []
   [:div
-   (dialog)
+   (modal)
    [:h1 (:text @app-state)]
    (game-status)
    (when (get-status)
@@ -126,7 +134,7 @@
 ;; this is particularly helpful for testing this ns without launching the app
 (mount-app-element)
 
-(defn display-app-state []
+(defn- display-app-state []
   (println (str @app-state)))
 
 (defn ^:before-load on-my-load []
