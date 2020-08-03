@@ -1,8 +1,7 @@
 (ns tictactoe.core-test
   (:require
    [cljs.test :refer-macros [deftest is]]
-   [tictactoe.core :refer [calc-index]]
-   [tictactoe.helper :refer [check-game]]))
+   [tictactoe.helper :refer [calc-index check-game]]))
 
 
 (deftest calc-index-test
