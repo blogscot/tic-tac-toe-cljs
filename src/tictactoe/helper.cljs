@@ -1,5 +1,14 @@
 (ns tictactoe.helper)
 
+(defn calc-index [x y]
+  (+ x (* 3 y)))
+
+(defn calc-computer-move [app-state]
+  (rand-nth (let [state (app-state :game)]
+              (for [i (range (count state))
+                    :when (= :empty (nth state i))]
+                i))))
+
 (def winning [[0 1 2]
               [3 4 5]
               [6 7 8]

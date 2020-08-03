@@ -3,10 +3,7 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as rdom]
-   [tictactoe.helper :refer [check-game]]))
-
-(defn calc-index [x y]
-  (+ x (* 3 y)))
+   [tictactoe.helper :refer [calc-index check-game calc-computer-move]]))
 
 (defonce app-state (atom {:text "Tic Tac Toe"
                           :next :circle
@@ -28,16 +25,21 @@
   []
   (check-game (get-in @app-state [:game])))
 
-(defn- next-turn []
-  (let [current (get-in @app-state [:next])
-        next (if (= current :circle) :cross :circle)]
-    (swap! app-state assoc-in [:next] next)))
-
 (defn- update-cell [pos]
   (let [cell-empty? (= :empty (get-in @app-state [:game pos]))
         game-over (get-status)]
     (when (and cell-empty? (not game-over))
       (swap! app-state assoc-in [:game pos] (get-in @app-state [:next])))))
+
+(defn- next-turn
+  "Swaps players' turns."
+  []
+  (let [opponent (get-in @app-state [:opponent])]
+    (if (= opponent :computer)
+      (update-cell (calc-computer-move @app-state))
+      (let [current-player (get-in @app-state [:next])
+            next (if (= current-player :circle) :cross :circle)]
+        (swap! app-state assoc-in [:next] next)))))
 
 (defn- close-modal []
   (set! (.-style (get-modal-element)) "display: none;"))
@@ -87,7 +89,7 @@
 
 (defn- reset-button []
   [:button {:on-click (fn []
-                        (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty)))))} "Reset Game"])
+                        (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty)))))} "New Game"])
 
 (defn- game-status []
   [:span#status (condp = (get-status)
