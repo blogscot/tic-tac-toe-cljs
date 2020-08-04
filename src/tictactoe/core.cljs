@@ -3,7 +3,8 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as rdom]
-   [tictactoe.utils :refer [calc-index check-game calc-computer-move]]))
+   [tictactoe.utils :refer [calc-index check-game calc-computer-move]]
+   [tictactoe.macros :refer [set-timeout]]))
 
 (defonce app-state (atom {:text "Tic Tac Toe"
                           :next :circle
@@ -40,10 +41,10 @@
         game-over (get-status)]
     (swap! app-state assoc-in [:next] next)
     (when (and (= current-player :circle) (not game-over) (= opponent :computer))
-      (js/setTimeout
-       #(do
-          (update-cell (calc-computer-move @app-state))
-          (swap! app-state assoc-in [:next] :circle))
+      (set-timeout
+       (do
+         (update-cell (calc-computer-move @app-state))
+         (swap! app-state assoc-in [:next] :circle))
        1000))))
 
 (defn- close-modal []
