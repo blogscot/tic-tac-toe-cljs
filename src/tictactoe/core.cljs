@@ -34,12 +34,17 @@
 (defn- next-turn
   "Swaps players' turns."
   []
-  (let [opponent (get-in @app-state [:opponent])]
-    (if (= opponent :computer)
-      (update-cell (calc-computer-move @app-state))
-      (let [current-player (get-in @app-state [:next])
-            next (if (= current-player :circle) :cross :circle)]
-        (swap! app-state assoc-in [:next] next)))))
+  (let [current-player (get-in @app-state [:next])
+        opponent (get-in @app-state [:opponent])
+        next (if (= current-player :circle) :cross :circle)
+        game-over (get-status)]
+    (swap! app-state assoc-in [:next] next)
+    (when (and (= current-player :circle) (not game-over) (= opponent :computer))
+      (js/setTimeout
+       #(do
+          (update-cell (calc-computer-move @app-state))
+          (swap! app-state assoc-in [:next] :circle))
+       1000))))
 
 (defn- close-modal []
   (set! (.-style (get-modal-element)) "display: none;"))
@@ -89,7 +94,8 @@
 
 (defn- reset-button []
   [:button {:on-click (fn []
-                        (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty)))))} "New Game"])
+                        (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty))))
+                        (swap! app-state assoc-in [:next] :circle))} "New Game"])
 
 (defn- game-status []
   [:span#status (condp = (get-status)
