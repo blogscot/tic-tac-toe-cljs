@@ -1,4 +1,4 @@
-(ns tictactoe.helper)
+(ns tictactoe.utils)
 
 (defn calc-index [x y]
   (+ x (* 3 y)))
