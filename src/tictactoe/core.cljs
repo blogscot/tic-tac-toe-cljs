@@ -20,38 +20,42 @@
   (gdom/getElementByClass "modal-container"))
 
 (defn- get-current-player []
-  (get-in @app-state [:next]))
+  (@app-state :next))
 
 (defn- update-game-status []
-  (let [status (check-game (get-in @app-state [:game]))]
+  (let [status (check-game (@app-state :game))]
     (swap! app-state assoc-in [:status] status)))
 
 (defn- get-game-status
   "Returns either nil (game in progress) or end condition:
    winning player or draw."
   []
-  (get-in @app-state [:status]))
+  (@app-state :status))
 
 (defn- update-cell [pos]
   (let [cell-empty? (= :empty (get-in @app-state [:game pos]))
         game-over (get-game-status)]
     (when (and cell-empty? (not game-over))
-      (swap! app-state assoc-in [:game pos] (get-in @app-state [:next])))))
+      (swap! app-state assoc-in [:game pos] (get-current-player)))))
 
-(defn- next-turn
-  "Swaps players' turns. Plays computer opponent if configured."
-  []
-  (let [current-player (get-in @app-state [:next])
-        opponent (get-in @app-state [:opponent])
-        next (if (= current-player :circle) :cross :circle)
-        game-over (get-game-status)]
-    (swap! app-state assoc-in [:next] next)
-    (when (and (= current-player :circle) (not game-over) (= opponent :computer))
+(defn- computer-turn []
+  (let [game-over (get-game-status)]
+    (if-not game-over
       (run-after
        1000
        (update-cell (calc-computer-move @app-state))
        (update-game-status)
        (swap! app-state assoc-in [:next] :circle)))))
+
+(defn- next-turn
+  "Swaps players' turns. Plays computer opponent if configured."
+  []
+  (let [current-player (@app-state :next)
+        opponent (@app-state :opponent)
+        next (if (= current-player :circle) :cross :circle)]
+    (swap! app-state assoc-in [:next] next)
+    (when (and (= current-player :circle) (= opponent :computer))
+      (computer-turn))))
 
 (defn- close-modal []
   (set! (.-style (get-modal-element)) "display: none;"))
