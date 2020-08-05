@@ -6,6 +6,10 @@ An implementation of Tic Tac Toe using ClojureScript and Reagent.
 
 This is a learn-by-doing project.
 
+## Development
+
+Using VS Code and Calva the game is started by 'jacking in'. Alternatively, using `lein fig:build` will start up a local REPL and open the game in the default browser.
+
 ## Todo
 
 1. Keep game score
