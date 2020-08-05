@@ -3,7 +3,8 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as rdom]
-   [tictactoe.utils :refer [calc-index check-game calc-computer-move]]
+   [tictactoe.utils :refer [calc-index check-game calc-computer-move]])
+  (:require-macros
    [tictactoe.macros :refer [run-after]]))
 
 (defonce app-state (atom {:text "Tic Tac Toe"
