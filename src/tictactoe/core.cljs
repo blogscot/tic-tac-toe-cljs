@@ -8,8 +8,10 @@
    [tictactoe.macros :refer [run-after]]))
 
 (defonce app-state (atom {:text "Tic Tac Toe"
-                          :next :circle
-                          :opponent :player
+                          :player1-symbol :circle
+                          :player2-symbol :cross
+                          :next :player1
+                          :opponent :human
                           :status nil
                           :game (vec (take 9 (repeat :empty)))}))
 
@@ -19,8 +21,13 @@
 (defn- get-modal-element []
   (gdom/getElementByClass "modal-container"))
 
-(defn- get-current-player []
-  (@app-state :next))
+(defn- get-current-player
+  "Returns current player, either :circle or :cross"
+  []
+  (let [next-player (@app-state :next)]
+    (if (= next-player :player1)
+      (@app-state :player1-symbol)
+      (@app-state :player2-symbol))))
 
 (defn- computer-opponent? []
   (= :computer (@app-state :opponent)))
@@ -48,15 +55,15 @@
        1000
        (update-cell (calc-computer-move @app-state))
        (update-game-status)
-       (swap! app-state assoc-in [:next] :circle)))))
+       (swap! app-state assoc-in [:next] :player1)))))
 
 (defn- next-turn
   "Swaps players' turns. Plays computer opponent if configured."
   []
   (let [current-player (@app-state :next)
-        next (if (= current-player :circle) :cross :circle)]
+        next (if (= current-player :player1) :player2 :player1)]
     (swap! app-state assoc-in [:next] next)
-    (when (and (= current-player :circle) (computer-opponent?))
+    (when (and (= current-player :player1) (computer-opponent?))
       (computer-turn))))
 
 (defn- close-modal []
@@ -111,17 +118,15 @@
   [:button {:on-click (fn []
                         (swap! app-state assoc-in [:status] nil)
                         (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty))))
-                        (when (and (computer-opponent?) (= :cross (get-current-player)))
+                        (when (and (computer-opponent?) (= :player2 (@app-state :next)))
                           (computer-turn)))} "New Game"])
 
 (defn- game-status []
-  [:span#status (condp = (get-game-status)
-                  nil (str "Current Player: " (if (= :circle (get-current-player))
-                                                "Circle"
-                                                "Cross"))
-                  :circle "Circle wins!"
-                  :cross "Cross wins!"
-                  :draw "Game is a bust!")])
+  [:span#status (let [player1-next? (= :player1 (@app-state :next))]
+                  (condp = (get-game-status)
+                    nil (str "Current Player: " (if player1-next? "Player 1" "Player 2"))
+                    :draw "Game is a bust!"
+                    (str (if player1-next? "Player 2" "Player 1") " wins!")))])
 
 (defn- modal []
   [:div.modal-container
@@ -130,7 +135,7 @@
      [:h1 "Tic Tac Toe"]]
     [:div#opponent-choice "Player vs"]
     [:span:btn-row
-     [:button.btn {:on-click #(set-opponent :player)} "Player"]
+     [:button.btn {:on-click #(set-opponent :human)} "Player"]
      [:button.btn {:on-click #(set-opponent :computer)} "Computer"]]]])
 
 (defn- game []
