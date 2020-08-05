@@ -13,7 +13,6 @@ Using VS Code and Calva the game is started by 'jacking in'. Alternatively, usin
 ## Todo
 
 1. Keep game score
-1. Subsequent games are started by loser
 1. Allow player to select X or O at start
 1. Allow player to reset game options
 1. Improve modal styling

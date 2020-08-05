@@ -22,6 +22,9 @@
 (defn- get-current-player []
   (@app-state :next))
 
+(defn- computer-opponent? []
+  (= :computer (@app-state :opponent)))
+
 (defn- update-game-status []
   (let [status (check-game (@app-state :game))]
     (swap! app-state assoc-in [:status] status)))
@@ -51,10 +54,9 @@
   "Swaps players' turns. Plays computer opponent if configured."
   []
   (let [current-player (@app-state :next)
-        opponent (@app-state :opponent)
         next (if (= current-player :circle) :cross :circle)]
     (swap! app-state assoc-in [:next] next)
-    (when (and (= current-player :circle) (= opponent :computer))
+    (when (and (= current-player :circle) (computer-opponent?))
       (computer-turn))))
 
 (defn- close-modal []
@@ -109,7 +111,8 @@
   [:button {:on-click (fn []
                         (swap! app-state assoc-in [:status] nil)
                         (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty))))
-                        (swap! app-state assoc-in [:next] :circle))} "New Game"])
+                        (when (and (computer-opponent?) (= :cross (get-current-player)))
+                          (computer-turn)))} "New Game"])
 
 (defn- game-status []
   [:span#status (condp = (get-game-status)
