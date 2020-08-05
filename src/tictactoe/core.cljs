@@ -10,6 +10,7 @@
 (defonce app-state (atom {:text "Tic Tac Toe"
                           :next :circle
                           :opponent :player
+                          :status nil
                           :game (vec (take 9 (repeat :empty)))}))
 
 (defn- get-app-element []
@@ -21,30 +22,35 @@
 (defn- get-current-player []
   (get-in @app-state [:next]))
 
-(defn- get-status
+(defn- update-game-status []
+  (let [status (check-game (get-in @app-state [:game]))]
+    (swap! app-state assoc-in [:status] status)))
+
+(defn- get-game-status
   "Returns either nil (game in progress) or end condition:
    winning player or draw."
   []
-  (check-game (get-in @app-state [:game])))
+  (get-in @app-state [:status]))
 
 (defn- update-cell [pos]
   (let [cell-empty? (= :empty (get-in @app-state [:game pos]))
-        game-over (get-status)]
+        game-over (get-game-status)]
     (when (and cell-empty? (not game-over))
       (swap! app-state assoc-in [:game pos] (get-in @app-state [:next])))))
 
 (defn- next-turn
-  "Swaps players' turns."
+  "Swaps players' turns. Plays computer opponent if configured."
   []
   (let [current-player (get-in @app-state [:next])
         opponent (get-in @app-state [:opponent])
         next (if (= current-player :circle) :cross :circle)
-        game-over (get-status)]
+        game-over (get-game-status)]
     (swap! app-state assoc-in [:next] next)
     (when (and (= current-player :circle) (not game-over) (= opponent :computer))
       (run-after
        1000
        (update-cell (calc-computer-move @app-state))
+       (update-game-status)
        (swap! app-state assoc-in [:next] :circle)))))
 
 (defn- close-modal []
@@ -63,7 +69,9 @@
           :fill color
           :x x
           :y y
-          :on-click (fn [] (update-cell (calc-index x y))
+          :on-click (fn []
+                      (update-cell (calc-index x y))
+                      (update-game-status)
                       (next-turn))}])
 
 (defn- circle [x y color]
@@ -95,11 +103,12 @@
 
 (defn- reset-button []
   [:button {:on-click (fn []
+                        (swap! app-state assoc-in [:status] nil)
                         (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty))))
                         (swap! app-state assoc-in [:next] :circle))} "New Game"])
 
 (defn- game-status []
-  [:span#status (condp = (get-status)
+  [:span#status (condp = (get-game-status)
                   nil (str "Current Player: " (if (= :circle (get-current-player))
                                                 "Circle"
                                                 "Cross"))
@@ -122,7 +131,7 @@
    (modal)
    [:h1 (:text @app-state)]
    (game-status)
-   (when (get-status)
+   (when (get-game-status)
      (reset-button))
    [:center
     [:svg {:view-box "0 0 3 3"
