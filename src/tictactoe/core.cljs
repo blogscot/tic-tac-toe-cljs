@@ -34,7 +34,7 @@
 
 (defn- update-game-status []
   (let [status (check-game (@app-state :game))]
-    (swap! app-state assoc-in [:status] status)))
+    (swap! app-state assoc :status status)))
 
 (defn- get-game-status
   "Returns either nil (game in progress) or end condition:
@@ -55,14 +55,14 @@
        1000
        (update-cell (calc-computer-move @app-state))
        (update-game-status)
-       (swap! app-state assoc-in [:next] :player1)))))
+       (swap! app-state assoc :next :player1)))))
 
 (defn- next-turn
   "Swaps players' turns. Plays computer opponent if configured."
   []
   (let [current-player (@app-state :next)
         next (if (= current-player :player1) :player2 :player1)]
-    (swap! app-state assoc-in [:next] next)
+    (swap! app-state assoc :next next)
     (when (and (= current-player :player1) (computer-opponent?))
       (computer-turn))))
 
@@ -75,7 +75,7 @@
     (swap! app-state assoc :player1-symbol :cross :player2-symbol :circle)))
 
 (defn- set-opponent [opponent]
-  (swap! app-state assoc-in [:opponent] opponent))
+  (swap! app-state assoc :opponent opponent))
 
 ;; Components
 
@@ -120,8 +120,9 @@
 
 (defn- reset-button []
   [:button {:on-click (fn []
-                        (swap! app-state assoc-in [:status] nil)
-                        (swap! app-state assoc-in [:game] (vec (take 9 (repeat :empty))))
+                        (swap! app-state assoc
+                               :status nil
+                               :game (vec (take 9 (repeat :empty))))
                         (when (and (computer-opponent?) (= :player2 (@app-state :next)))
                           (computer-turn)))} "New Game"])
 
