@@ -133,10 +133,19 @@
    [:div.modal
     [:div.details
      [:h1 "Tic Tac Toe"]]
-    [:div#opponent-choice "Player vs"]
-    [:span:btn-row
-     [:button.btn {:on-click #(set-opponent :human)} "Player"]
-     [:button.btn {:on-click #(set-opponent :computer)} "Computer"]]]])
+    [:div#game-choices
+     [:div#symbol-choice
+      [:label {:style {:margin-right 18}} "Start as"]
+      [:span
+       [:button.btn "O"]
+       [:button.btn "X"]]]
+     [:div#opponent-choice
+      [:label "Player vs"]
+      [:span:btn-row
+       [:button.btn {:on-click #(set-opponent :human)} "Player"]
+       [:button.btn {:on-click #(set-opponent :computer)} "Computer"]]]]
+    [:div#commands
+     [:button.btn.btn-start {:style {:margin "1rem 0"}} "Start"]]]])
 
 (defn- game []
   [:div
