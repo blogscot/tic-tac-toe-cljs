@@ -69,9 +69,13 @@
 (defn- close-modal []
   (set! (.-style (get-modal-element)) "display: none;"))
 
+(defn- set-player-symbol [symbol]
+  (if (= symbol :circle)
+    (swap! app-state assoc :player1-symbol :circle :player2-symbol :cross)
+    (swap! app-state assoc :player1-symbol :cross :player2-symbol :circle)))
+
 (defn- set-opponent [opponent]
-  (swap! app-state assoc-in [:opponent] opponent)
-  (close-modal))
+  (swap! app-state assoc-in [:opponent] opponent))
 
 ;; Components
 
@@ -137,15 +141,16 @@
      [:div#symbol-choice
       [:label {:style {:margin-right 18}} "Start as"]
       [:span
-       [:button.btn "O"]
-       [:button.btn "X"]]]
+       [:button.btn {:on-click #(set-player-symbol :circle)} "O"]
+       [:button.btn {:on-click #(set-player-symbol :cross)} "X"]]]
      [:div#opponent-choice
       [:label "Player vs"]
       [:span:btn-row
        [:button.btn {:on-click #(set-opponent :human)} "Player"]
        [:button.btn {:on-click #(set-opponent :computer)} "Computer"]]]]
     [:div#commands
-     [:button.btn.btn-start {:style {:margin "1rem 0"}} "Start"]]]])
+     [:button.btn.btn-start {:style {:margin "1rem 0"}
+                             :on-click close-modal} "Start"]]]])
 
 (defn- game []
   [:div
