@@ -10,8 +10,8 @@
    [tictactoe.macros :refer [run-after]]))
 
 (defonce app-state (atom {:text "Tic Tac Toe"
-                          :player1-symbol :circle
-                          :player2-symbol :cross
+                          :player1 {:symbol :circle}
+                          :player2 {:symbol :cross}
                           :next :player1
                           :opponent :human
                           :status nil
@@ -28,8 +28,8 @@
   []
   (let [next-player (@app-state :next)]
     (if (= next-player :player1)
-      (@app-state :player1-symbol)
-      (@app-state :player2-symbol))))
+      (get-in @app-state [:player1 :symbol])
+      (get-in @app-state [:player2 :symbol]))))
 
 (defn- computer-opponent? []
   (= :computer (@app-state :opponent)))
@@ -75,8 +75,12 @@
   (classlist/toggle (get-symbol-btn) "btn-selected")
   (classlist/toggle (get-symbol-btn2) "btn-selected")
   (if (= symbol :circle)
-    (swap! app-state assoc :player1-symbol :circle :player2-symbol :cross)
-    (swap! app-state assoc :player1-symbol :cross :player2-symbol :circle)))
+    (do
+      (swap! app-state assoc-in [:player1 :symbol] :circle)
+      (swap! app-state assoc-in [:player2 :symbol] :cross))
+    (do
+      (swap! app-state assoc-in [:player1 :symbol] :circle)
+      (swap! app-state assoc-in [:player2 :symbol] :cross))))
 
 (defn- set-opponent [opponent]
   (swap! app-state assoc :opponent opponent)
@@ -152,7 +156,7 @@
        [:button#cross.btn {:on-click #(set-player-symbol :cross)} "X"]]]
      [:div#opponent-choice
       [:label "Player vs"]
-      [:span:btn-row
+      [:span
        [:button#human.btn {:on-click #(set-opponent :human)} "Player"]
        [:button#computer.btn {:on-click #(set-opponent :computer)} "Computer"]]]]
     [:div#commands
