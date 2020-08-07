@@ -1,6 +1,7 @@
 (ns ^:figwheel-hooks tictactoe.core
   (:require
    [goog.dom :as gdom]
+   [goog.dom.classlist :as classlist]
    [goog.style :as style]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as rdom]
@@ -71,16 +72,16 @@
   (style/setStyle (get-modal-element) "display" "none"))
 
 (defn- set-player-symbol [symbol]
-  (.toggle (.-classList (get-symbol-btn)) "btn-selected")
-  (.toggle (.-classList (get-symbol-btn2)) "btn-selected")
+  (classlist/toggle (get-symbol-btn) "btn-selected")
+  (classlist/toggle (get-symbol-btn2) "btn-selected")
   (if (= symbol :circle)
     (swap! app-state assoc :player1-symbol :circle :player2-symbol :cross)
     (swap! app-state assoc :player1-symbol :cross :player2-symbol :circle)))
 
 (defn- set-opponent [opponent]
   (swap! app-state assoc :opponent opponent)
-  (.toggle (.-classList (get-opponent-btn)) "btn-selected")
-  (.toggle (.-classList (get-opponent-btn2)) "btn-selected"))
+  (classlist/toggle (get-opponent-btn) "btn-selected")
+  (classlist/toggle (get-opponent-btn2) "btn-selected"))
 
 ;; Components
 
