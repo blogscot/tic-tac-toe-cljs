@@ -15,14 +15,12 @@
                           :status nil
                           :game (vec (take 9 (repeat :empty)))}))
 
-(defn- get-app-element []  (gdom/getElement "app"))
+(defn- get-app-element [] (gdom/getElement "app"))
 (defn- get-symbol-btn [] (.querySelector js/document "#symbol-choice button"))
 (defn- get-symbol-btn2 [] (.querySelector js/document "#symbol-choice button:nth-of-type(2)"))
 (defn- get-opponent-btn [] (.querySelector js/document "#opponent-choice button"))
 (defn- get-opponent-btn2 [] (.querySelector js/document "#opponent-choice button:nth-of-type(2)"))
-
-(defn- get-modal-element []
-  (gdom/getElementByClass "modal-container"))
+(defn- get-modal-element [] (gdom/getElementByClass "modal-container"))
 
 (defn- get-current-player
   "Returns current player, either :circle or :cross"
@@ -73,29 +71,16 @@
   (set! (.-style (get-modal-element)) "display: none;"))
 
 (defn- set-player-symbol [symbol]
-  (let [button (get-symbol-btn)
-        button2 (get-symbol-btn2)]
-    (if (= symbol :circle)
-      (do
-        (swap! app-state assoc :player1-symbol :circle :player2-symbol :cross)
-        (.add (.-classList button) "btn-selected")
-        (.remove (.-classList button2) "btn-selected"))
-      (do
-        (swap! app-state assoc :player1-symbol :cross :player2-symbol :circle)
-        (.add (.-classList button2) "btn-selected")
-        (.remove (.-classList button) "btn-selected")))))
+  (.toggle (.-classList (get-symbol-btn)) "btn-selected")
+  (.toggle (.-classList (get-symbol-btn2)) "btn-selected")
+  (if (= symbol :circle)
+    (swap! app-state assoc :player1-symbol :circle :player2-symbol :cross)
+    (swap! app-state assoc :player1-symbol :cross :player2-symbol :circle)))
 
 (defn- set-opponent [opponent]
   (swap! app-state assoc :opponent opponent)
-  (let [button (get-opponent-btn)
-        button2 (get-opponent-btn2)]
-    (if (= opponent :human)
-      (do
-        (.add (.-classList button) "btn-selected")
-        (.remove (.-classList button2) "btn-selected"))
-      (do
-        (.add (.-classList button2) "btn-selected")
-        (.remove (.-classList button) "btn-selected")))))
+  (.toggle (.-classList (get-opponent-btn)) "btn-selected")
+  (.toggle (.-classList (get-opponent-btn2)) "btn-selected"))
 
 ;; Components
 
