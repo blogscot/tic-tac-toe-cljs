@@ -18,7 +18,7 @@ body {
 	min-height: 100vh;
 }
 
-.modal-container {
+#modal-container {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -84,7 +84,7 @@ body {
 	margin: 0 0 1rem 1rem;
 }
 
-.modal h1 {
+#modal h1 {
 	font-size: 2rem;
 }
 

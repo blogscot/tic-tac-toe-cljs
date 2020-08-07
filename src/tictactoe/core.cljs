@@ -1,6 +1,7 @@
 (ns ^:figwheel-hooks tictactoe.core
   (:require
    [goog.dom :as gdom]
+   [goog.style :as style]
    [reagent.core :as reagent :refer [atom]]
    [reagent.dom :as rdom]
    [tictactoe.utils :refer [calc-index check-game calc-computer-move]])
@@ -15,12 +16,11 @@
                           :status nil
                           :game (vec (take 9 (repeat :empty)))}))
 
-(defn- get-app-element [] (gdom/getElement "app"))
-(defn- get-symbol-btn [] (.querySelector js/document "#symbol-choice button"))
-(defn- get-symbol-btn2 [] (.querySelector js/document "#symbol-choice button:nth-of-type(2)"))
-(defn- get-opponent-btn [] (.querySelector js/document "#opponent-choice button"))
-(defn- get-opponent-btn2 [] (.querySelector js/document "#opponent-choice button:nth-of-type(2)"))
-(defn- get-modal-element [] (gdom/getElementByClass "modal-container"))
+(defn- get-symbol-btn [] (gdom/getElement "circle"))
+(defn- get-symbol-btn2 [] (gdom/getElement "cross"))
+(defn- get-opponent-btn [] (gdom/getElement "human"))
+(defn- get-opponent-btn2 [] (gdom/getElement "computer"))
+(defn- get-modal-element [] (gdom/getElement "modal-container"))
 
 (defn- get-current-player
   "Returns current player, either :circle or :cross"
@@ -68,7 +68,7 @@
       (computer-turn))))
 
 (defn- close-modal []
-  (set! (.-style (get-modal-element)) "display: none;"))
+  (style/setStyle (get-modal-element) "display" "none"))
 
 (defn- set-player-symbol [symbol]
   (.toggle (.-classList (get-symbol-btn)) "btn-selected")
@@ -139,7 +139,7 @@
                     (str (if player1-next? "Player 2" "Player 1") " wins!")))])
 
 (defn- modal []
-  [:div.modal-container
+  [:div#modal-container
    [:div.modal
     [:div.details
      [:h1 "Tic Tac Toe"]]
@@ -147,13 +147,13 @@
      [:div#symbol-choice
       [:label {:style {:margin-right 18}} "Start as"]
       [:span
-       [:button.btn {:on-click #(set-player-symbol :circle)} "O"]
-       [:button.btn {:on-click #(set-player-symbol :cross)} "X"]]]
+       [:button#circle.btn {:on-click #(set-player-symbol :circle)} "O"]
+       [:button#cross.btn {:on-click #(set-player-symbol :cross)} "X"]]]
      [:div#opponent-choice
       [:label "Player vs"]
       [:span:btn-row
-       [:button.btn {:on-click #(set-opponent :human)} "Player"]
-       [:button.btn {:on-click #(set-opponent :computer)} "Computer"]]]]
+       [:button#human.btn {:on-click #(set-opponent :human)} "Player"]
+       [:button#computer.btn {:on-click #(set-opponent :computer)} "Computer"]]]]
     [:div#commands
      [:button.btn.btn-start {:style {:margin "1rem 0"}
                              :on-click close-modal} "Start"]]]])
@@ -177,7 +177,7 @@
   (rdom/render [game] el))
 
 (defn mount-app-element []
-  (when-let [el (get-app-element)]
+  (when-let [el (gdom/getElement "app")]
     (mount el)
     (.add (.-classList (get-symbol-btn)) "btn-selected")
     (.add (.-classList (get-opponent-btn)) "btn-selected")))
