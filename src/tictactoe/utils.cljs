@@ -1,6 +1,10 @@
-(ns tictactoe.utils)
+(ns tictactoe.utils
+  (:require [clojure.spec.alpha :as s]))
+
+(s/def ::pos (s/and int? #(>= % 0) #(< % 3)))
 
 (defn calc-index [x y]
+  {:pre [(s/valid? ::pos x), (s/valid? ::pos y)]}
   (+ x (* 3 y)))
 
 (defn calc-computer-move [app-state]
