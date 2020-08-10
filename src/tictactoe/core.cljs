@@ -93,16 +93,22 @@
   (classlist/toggle (get-opponent-btn) "btn-selected")
   (classlist/toggle (get-opponent-btn2) "btn-selected"))
 
+(defn- get-labels []
+  (if (= (@app-state :opponent) :human)
+    ["Player1" "Player 2"]
+    ["Player" "Computer"]))
+
 ;; Components
 
 (defn- scoreboard [wins1 wins2]
-  [:div#scoreboard
-   [:div
-    [:div "Player 1"]
-    [:div.score-text (str wins1)]]
-   [:div
-    [:div "Player 2"]
-    [:div.score-text (str wins2)]]])
+  (let [[player1 player2] (get-labels)]
+    [:div#scoreboard
+     [:div
+      [:div player1]
+      [:div.score-text (str wins1)]]
+     [:div
+      [:div player2]
+      [:div.score-text (str wins2)]]]))
 
 (defn- rect [x y color]
   ^{:key (str x y)}
@@ -164,11 +170,12 @@
                                   (open-modal))} "Reset"])
 
 (defn- game-status []
-  [:span#status (let [player1-next? (= :player1 (@app-state :next))]
+  [:span#status (let [player1-next? (= :player1 (@app-state :next))
+                      [player1 player2] (get-labels)]
                   (condp = (get-game-status)
-                    nil (str "Current Player: " (if player1-next? "Player 1" "Player 2"))
+                    nil (str "Current Player: " (if player1-next? player1 player2))
                     :draw "Game is a bust!"
-                    (str (if player1-next? "Player 2" "Player 1") " wins!")))])
+                    (str (if player1-next? player2 player1) " wins!")))])
 
 (defn- modal []
   [:div#modal-container
