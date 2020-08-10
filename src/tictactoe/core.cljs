@@ -9,15 +9,13 @@
   (:require-macros
    [tictactoe.macros :refer [run-after]]))
 
-(def initial-state {:text "Tic Tac Toe"
-                    :player1 {:symbol :circle :wins 0}
-                    :player2 {:symbol :cross :wins 0}
-                    :next :player1
-                    :opponent :human
-                    :status nil
-                    :game (vec (take 9 (repeat :empty)))})
-
-(defonce app-state (atom initial-state))
+(defonce app-state (atom {:text "Tic Tac Toe"
+                          :player1 {:symbol :circle :wins 0}
+                          :player2 {:symbol :cross :wins 0}
+                          :next :player1
+                          :opponent :human
+                          :status nil
+                          :game (vec (take 9 (repeat :empty)))}))
 
 (defn- get-symbol-btn [] (gdom/getElement "circle"))
 (defn- get-symbol-btn2 [] (gdom/getElement "cross"))
@@ -87,8 +85,8 @@
       (swap! app-state assoc-in [:player1 :symbol] :circle)
       (swap! app-state assoc-in [:player2 :symbol] :cross))
     (do
-      (swap! app-state assoc-in [:player1 :symbol] :circle)
-      (swap! app-state assoc-in [:player2 :symbol] :cross))))
+      (swap! app-state assoc-in [:player1 :symbol] :cross)
+      (swap! app-state assoc-in [:player2 :symbol] :circle))))
 
 (defn- set-opponent [opponent]
   (swap! app-state assoc :opponent opponent)
@@ -157,7 +155,12 @@
                   (computer-turn)))} "New Game"])
 
 (defn- reset-game-button []
-  [:button#btn-reset {:on-click #((reset! app-state initial-state)
+  [:button#btn-reset {:on-click #((swap! app-state assoc-in [:player1 :wins] 0)
+                                  (swap! app-state assoc-in [:player2 :wins] 0)
+                                  (swap! app-state assoc
+                                         :next :player1
+                                         :status nil
+                                         :game (vec (take 9 (repeat :empty))))
                                   (open-modal))} "Reset"])
 
 (defn- game-status []
