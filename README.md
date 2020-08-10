@@ -12,8 +12,6 @@ Using VS Code and Calva the game is started by 'jacking in'. Alternatively, usin
 
 ## Todo
 
-1. Keep game score
-1. Allow player to reset game options
 1. Improve modal styling
 1. Make mobile friendly
 

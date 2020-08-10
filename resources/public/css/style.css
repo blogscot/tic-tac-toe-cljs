@@ -112,6 +112,7 @@ svg {
 	box-shadow: 1px 1px 1px aquamarine;
 }
 
+#btn-new-game,
 #btn-reset {
 	margin-left: 1rem;
 }
