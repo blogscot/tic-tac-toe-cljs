@@ -18,6 +18,30 @@ body {
 	min-height: 100vh;
 }
 
+svg {
+	margin-top: 1rem;
+}
+
+#scoreboard {
+	display: flex;
+	justify-content: space-evenly;
+	margin: 1rem 1rem 0 0;
+	border: 1px solid black;
+	padding: 0.5rem;
+	font-size: 1.2rem;
+	background-color: #485190;
+	color: whitesmoke;
+	opacity: 1;
+	transition: opacity 0.3s linear;
+}
+
+.score-text {
+	text-align: center;
+	padding-top: 3px;
+}
+
+/* Modal */
+
 #modal-container {
 	position: fixed;
 	top: 0;
@@ -53,7 +77,6 @@ body {
 	padding: 0.3rem 0.8rem;
 	border: 1px solid hsla(0, 0%, 100%, 0.4);
 	border-radius: 0.3rem;
-
 	color: inherit;
 	background: transparent;
 	font-size: 1.4rem;
@@ -84,20 +107,15 @@ body {
 	margin: 0 0 1rem 1rem;
 }
 
-#modal h1 {
-	font-size: 2rem;
-}
-
 .btn-selected {
 	border-color: aquamarine;
 	box-shadow: 1px 1px 1px aquamarine;
 }
 
-#status {
-	font-size: 1.2rem;
-	margin: 2rem;
+#btn-reset {
+	margin-left: 1rem;
 }
 
-svg {
-	margin-top: 1rem;
+#status {
+	font-size: 1.2rem;
 }

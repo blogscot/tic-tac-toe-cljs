@@ -10,12 +10,16 @@
    [tictactoe.macros :refer [run-after]]))
 
 (defonce app-state (atom {:text "Tic Tac Toe"
-                          :player1 {:symbol :circle}
-                          :player2 {:symbol :cross}
+                          :player1 {:symbol :circle :wins 0}
+                          :player2 {:symbol :cross :wins 0}
                           :next :player1
                           :opponent :human
                           :status nil
                           :game (vec (take 9 (repeat :empty)))}))
+
+(comment
+  (@app-state :player2)
+  (swap! app-state update-in [:player2 :wins] inc))
 
 (defn- get-symbol-btn [] (gdom/getElement "circle"))
 (defn- get-symbol-btn2 [] (gdom/getElement "cross"))
@@ -35,7 +39,10 @@
   (= :computer (@app-state :opponent)))
 
 (defn- update-game-status []
-  (let [status (check-game (@app-state :game))]
+  (let [status (check-game (@app-state :game))
+        current-player (@app-state :next)]
+    (when (or (= status :circle) (= status :cross))
+      (swap! app-state update-in [current-player :wins] inc))
     (swap! app-state assoc :status status)))
 
 (defn- get-game-status
@@ -89,6 +96,15 @@
 
 ;; Components
 
+(defn- scoreboard [wins1 wins2]
+  [:div#scoreboard
+   [:div
+    [:div "Player 1"]
+    [:div.score-text (str wins1)]]
+   [:div
+    [:div "Player 2"]
+    [:div.score-text (str wins2)]]])
+
 (defn- rect [x y color]
   ^{:key (str x y)}
   [:rect {:width 0.9
@@ -129,12 +145,13 @@
       :cross  (cross x y "red"))))
 
 (defn- reset-button []
-  [:button {:on-click (fn []
-                        (swap! app-state assoc
-                               :status nil
-                               :game (vec (take 9 (repeat :empty))))
-                        (when (and (computer-opponent?) (= :player2 (@app-state :next)))
-                          (computer-turn)))} "New Game"])
+  [:button#btn-reset
+   {:on-click (fn []
+                (swap! app-state assoc
+                       :status nil
+                       :game (vec (take 9 (repeat :empty))))
+                (when (and (computer-opponent?) (= :player2 (@app-state :next)))
+                  (computer-turn)))} "New Game"])
 
 (defn- game-status []
   [:span#status (let [player1-next? (= :player1 (@app-state :next))]
@@ -170,6 +187,9 @@
    (game-status)
    (when (get-game-status)
      (reset-button))
+   (scoreboard
+    (get-in @app-state [:player1 :wins])
+    (get-in @app-state [:player2 :wins]))
    [:center
     [:svg {:view-box "0 0 3 3"
            :width 500
