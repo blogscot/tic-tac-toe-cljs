@@ -11,6 +11,7 @@ body {
 		hsl(236, 50%, 50%),
 		hsl(195, 50%, 50%)
 	);
+	--btn-border: aquamarine;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -107,9 +108,23 @@ svg {
 	margin: 0 0 1rem 1rem;
 }
 
+.playing {
+	font-weight: 600;
+	border-width: 1px 0;
+	border-style: solid;
+}
+
 .btn-selected {
-	border-color: aquamarine;
-	box-shadow: 1px 1px 1px aquamarine;
+	border-color: var(--btn-border);
+	box-shadow: 1px 1px 1px var(--btn-border);
+}
+
+.btn-start:hover {
+	border-color: var(--btn-border);
+}
+
+.btn-start:active {
+	outline: none;
 }
 
 #btn-new-game,

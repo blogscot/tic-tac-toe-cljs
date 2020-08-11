@@ -17,9 +17,6 @@
                           :status nil
                           :game (vec (take 9 (repeat :empty)))}))
 
-(comment
-  @app-state)
-
 (defn- get-symbol-btn [] (gdom/getElement "circle"))
 (defn- get-symbol-btn2 [] (gdom/getElement "cross"))
 (defn- get-opponent-btn [] (gdom/getElement "human"))
@@ -50,20 +47,33 @@
   []
   (@app-state :status))
 
+(defn- game-over? []
+  (get-game-status))
+
+(defn- update-scoreboard []
+  (let [p1 (gdom/getElement "player1")
+        p2 (gdom/getElement "player2")]
+    (if (= (@app-state :next) :player1)
+      (do
+        (classlist/add p1 "playing")
+        (classlist/remove p2 "playing"))
+      (do
+        (classlist/add p2 "playing")
+        (classlist/remove p1 "playing")))))
+
 (defn- update-cell [pos]
-  (let [cell-empty? (= :empty (get-in @app-state [:game pos]))
-        game-over (get-game-status)]
-    (when (and cell-empty? (not game-over))
+  (let [cell-empty? (= :empty (get-in @app-state [:game pos]))]
+    (when (and cell-empty? (not (game-over?)))
       (swap! app-state assoc-in [:game pos] (get-current-player)))))
 
 (defn- computer-turn []
-  (let [game-over (get-game-status)]
-    (if-not game-over
-      (run-after
-       1000
-       (update-cell (calc-computer-move @app-state))
-       (update-game-status)
-       (swap! app-state assoc :next :player1)))))
+  (if-not (game-over?)
+    (run-after
+     1000
+     (update-cell (calc-computer-move @app-state))
+     (update-game-status)
+     (swap! app-state assoc :next :player1)
+     (update-scoreboard))))
 
 (defn- next-turn
   "Swaps players' turns. Plays computer opponent if configured."
@@ -71,6 +81,7 @@
   (let [current-player (@app-state :next)
         next (if (= current-player :player1) :player2 :player1)]
     (swap! app-state assoc :next next)
+    (update-scoreboard)
     (when (and (= current-player :player1) (computer-opponent?))
       (computer-turn))))
 
@@ -107,10 +118,10 @@
   (let [[player1 player2] (get-labels)]
     [:div#scoreboard
      [:div
-      [:div player1]
+      [:div#player1 player1]
       [:div.score-text (str wins1)]]
      [:div
-      [:div player2]
+      [:div#player2 player2]
       [:div.score-text (str wins2)]]]))
 
 (defn- rect [x y color]
@@ -122,10 +133,9 @@
           :y y
           :on-click (fn []
                       (update-cell (calc-index x y))
-                      (let [game-over (get-game-status)]
-                        (when-not game-over
-                          (update-game-status)
-                          (next-turn))))}])
+                      (when-not (game-over?)
+                        (update-game-status)
+                        (next-turn)))}])
 
 (defn- circle [x y color]
   ^{:key (str x y)}
@@ -177,7 +187,7 @@
   [:span#status (let [player1-next? (= :player1 (@app-state :next))
                       [player1 player2] (get-labels)]
                   (condp = (get-game-status)
-                    nil (str "Current Player: " (if player1-next? player1 player2))
+                    nil ""
                     :draw "Game is a bust!"
                     (str (if player1-next? player2 player1) " wins!")))])
 
@@ -206,7 +216,7 @@
    (modal)
    [:h1 (:text @app-state)]
    (game-status)
-   (when (get-game-status)
+   (when (game-over?)
      [:span
       (new-game-button)
       (reset-game-button)])
@@ -227,8 +237,9 @@
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
     (mount el)
-    (.add (.-classList (get-symbol-btn)) "btn-selected")
-    (.add (.-classList (get-opponent-btn)) "btn-selected")))
+    (classlist/add (get-symbol-btn) "btn-selected")
+    (classlist/add (get-opponent-btn) "btn-selected")
+    (update-scoreboard)))
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
