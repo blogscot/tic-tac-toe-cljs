@@ -17,6 +17,9 @@
                           :status nil
                           :game (vec (take 9 (repeat :empty)))}))
 
+(comment
+  @app-state)
+
 (defn- get-symbol-btn [] (gdom/getElement "circle"))
 (defn- get-symbol-btn2 [] (gdom/getElement "cross"))
 (defn- get-opponent-btn [] (gdom/getElement "human"))
@@ -95,7 +98,7 @@
 
 (defn- get-labels []
   (if (= (@app-state :opponent) :human)
-    ["Player1" "Player 2"]
+    ["Player 1" "Player 2"]
     ["Player" "Computer"]))
 
 ;; Components
@@ -161,7 +164,8 @@
                   (computer-turn)))} "New Game"])
 
 (defn- reset-game-button []
-  [:button#btn-reset {:on-click #((swap! app-state assoc-in [:player1 :wins] 0)
+  [:button#btn-reset {:on-click (fn []
+                                  (swap! app-state assoc-in [:player1 :wins] 0)
                                   (swap! app-state assoc-in [:player2 :wins] 0)
                                   (swap! app-state assoc
                                          :next :player1
