@@ -132,7 +132,7 @@
           :x x
           :y y
           :on-click (fn []
-                      (when (= :player1 (@app-state :next))
+                      (when-not (and (computer-opponent?) (= :player2 (@app-state :next)))
                         (update-cell (calc-index x y))
                         (when-not (game-over?)
                           (update-game-status)
@@ -220,13 +220,11 @@
    [:span {:style {:visibility (if (game-over?) "initial" "hidden")}}
     (new-game-button)
     (reset-game-button)]
-   (scoreboard
-    (get-in @app-state [:player1 :wins])
-    (get-in @app-state [:player2 :wins]))
-   [:center
-    [:svg {:view-box "0 0 3 3"
-           :width 500
-           :height 500}
+   [:div
+    (scoreboard
+     (get-in @app-state [:player1 :wins])
+     (get-in @app-state [:player2 :wins]))
+    [:svg.svg-scaling {:view-box "0 0 3 3"}
      (doall (for [x-cell (range 3)
                   y-cell (range 3)]
               (cell x-cell y-cell)))]]])
@@ -244,12 +242,6 @@
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
 (mount-app-element)
-
-(defn- display-app-state []
-  (println (str @app-state)))
-
-(defn ^:before-load on-my-load []
-  (display-app-state))
 
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []

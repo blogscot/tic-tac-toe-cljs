@@ -23,17 +23,22 @@ svg {
 	margin-top: 1rem;
 }
 
+.svg-scaling {
+	width: 500px;
+	height: 500px;
+}
+
 #scoreboard {
+	width: auto;
 	display: flex;
 	justify-content: space-evenly;
 	margin: 1rem 1rem 0 0;
 	border: 1px solid black;
 	padding: 0.5rem;
+	padding-top: 1rem;
 	font-size: 1.2rem;
 	background-color: #485190;
 	color: whitesmoke;
-	opacity: 1;
-	transition: opacity 0.3s linear;
 }
 
 .score-text {
@@ -129,9 +134,24 @@ svg {
 
 #btn-new-game,
 #btn-reset {
-	margin-left: 1rem;
+	margin-left: 1.2rem;
+	padding: 5px 10px;
+	font-size: 1rem;
 }
 
 #status {
 	font-size: 1.2rem;
+}
+
+/* Media Queries */
+
+@media screen and (max-width: 480px) {
+	.svg-scaling {
+		width: 330px;
+		height: 330px;
+	}
+
+	#scoreboard {
+		width: 301px;
+	}
 }
