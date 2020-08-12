@@ -216,10 +216,9 @@
    (modal)
    [:h1 (:text @app-state)]
    (game-status)
-   (when (game-over?)
-     [:span
-      (new-game-button)
-      (reset-game-button)])
+   [:span {:style {:visibility (if (game-over?) "initial" "hidden")}}
+    (new-game-button)
+    (reset-game-button)]
    (scoreboard
     (get-in @app-state [:player1 :wins])
     (get-in @app-state [:player2 :wins]))
