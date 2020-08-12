@@ -132,10 +132,11 @@
           :x x
           :y y
           :on-click (fn []
-                      (update-cell (calc-index x y))
-                      (when-not (game-over?)
-                        (update-game-status)
-                        (next-turn)))}])
+                      (when (= :player1 (@app-state :next))
+                        (update-cell (calc-index x y))
+                        (when-not (game-over?)
+                          (update-game-status)
+                          (next-turn))))}])
 
 (defn- circle [x y color]
   ^{:key (str x y)}
