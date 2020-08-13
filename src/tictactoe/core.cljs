@@ -182,6 +182,7 @@
                                          :next :player1
                                          :status nil
                                          :game (vec (take 9 (repeat :empty))))
+                                  (update-scoreboard)
                                   (open-modal))} "Reset"])
 
 (defn- game-status []
