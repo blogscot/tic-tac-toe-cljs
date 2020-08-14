@@ -16,8 +16,8 @@
 (defn- check-line [line game]
   (let [matches (map #(get game %) line)
         first-match (first matches)]
-    (if (and (or (= first-match :circle) (= first-match :cross))
-             (every? #(= (first matches) %) matches))
+    (if (and (every? #(= (first matches) %) matches)
+             (not= first-match :empty))
       first-match
       nil)))
 
